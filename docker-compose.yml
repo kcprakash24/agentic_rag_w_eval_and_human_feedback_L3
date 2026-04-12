@@ -1,0 +1,51 @@
+# pgvector/pgvector:pg16 — official PostgreSQL 16 image with pgvector extension pre-installed. No manual extension setup needed.
+# healthcheck — Docker polls this command to know when the container is actually ready to accept connections, not just started.
+# volumes: pgdata — named Docker volume. Data lives here, survives docker compose down. Only destroyed with docker compose down -v.
+# redis --appendonly yes — Redis persistence mode. Writes every operation to disk so data survives Redis restart.
+
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: stateful_rag_postgres
+    environment:
+      POSTGRES_DB: docmind
+      POSTGRES_USER: docmind
+      POSTGRES_PASSWORD: docmind
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U docmind -d docmind"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: stateful_rag_redis_ui
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7-alpine
+    container_name: stateful_rag_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    command: redis-server --appendonly yes  # persist redis data to disk
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
+  redisdata:
