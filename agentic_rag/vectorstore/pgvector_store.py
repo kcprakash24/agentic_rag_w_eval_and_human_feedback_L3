@@ -1,10 +1,8 @@
-from time import timezone
-
 import psycopg2
 import psycopg2.extras
 from agentic_rag.config import get_settings
 from agentic_rag.ingestion.chunker import DocumentChunk
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
 def get_connection():
     """Raw psycopg2 connection."""
