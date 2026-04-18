@@ -13,6 +13,7 @@ dependencies = [
     "langchain-postgres>=0.0.17",
     "langfuse>=4.2.0",
     "langgraph>=1.1.6",
+    "matplotlib>=3.10.8",
     "pgvector>=0.3.6",
     "psycopg2-binary>=2.9.11",
     "pydantic-settings>=2.13.1",
@@ -20,8 +21,11 @@ dependencies = [
     "python-dotenv>=1.2.2",
     "ragas>=0.4.3",
     "redis>=7.4.0",
+    "rouge-score>=0.1.2",
+    "sacrebleu>=2.6.0",
     "sentence-transformers>=5.4.0",
     "streamlit>=1.56.0",
+    "watchdog>=6.0.0",
 ]
 
 [dependency-groups]

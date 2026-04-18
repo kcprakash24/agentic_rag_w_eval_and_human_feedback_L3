@@ -1,8 +1,10 @@
+from time import timezone
+
 import psycopg2
 import psycopg2.extras
 from agentic_rag.config import get_settings
 from agentic_rag.ingestion.chunker import DocumentChunk
-
+from datetime import datetime
 
 def get_connection():
     """Raw psycopg2 connection."""
@@ -223,5 +225,30 @@ def explain_query(query_embedding: list[float], collection: str | None = None) -
         plan = "\n".join(row[0] for row in cur.fetchall())
         return plan
 
+    finally:
+        conn.close()
+
+def save_feedback(
+    trace_id: str,
+    user_id: str,
+    question: str,
+    answer: str,
+    thumbs_up: bool,
+    comment: str | None = None,
+) -> None:
+    """Persists human feedback to user_feedback table."""
+    settings = get_settings()
+    conn = psycopg2.connect(settings.postgres_url)
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                INSERT INTO user_feedback
+                    (trace_id, user_id, question, answer, thumbs_up, comment, created_at)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                """,
+                (trace_id, user_id, question, answer, thumbs_up, comment, datetime.now(timezone.utc)),
+            )
+        conn.commit()
     finally:
         conn.close()

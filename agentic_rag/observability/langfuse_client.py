@@ -80,3 +80,25 @@ def verify_langfuse_connection() -> bool:
         return True
     print("Langfuse: authentication failed")
     return False
+
+def submit_feedback(
+    trace_id: str,
+    thumbs_up: bool,
+    comment: str | None = None,
+) -> None:
+    """
+    Logs human feedback as a Langfuse score on an existing trace.
+    score name: 'human_feedback' | value: 1.0 (thumbs up) or 0.0 (thumbs down)
+    """
+    try:
+        langfuse = get_langfuse()
+        langfuse.create_score(
+            trace_id=trace_id,
+            name="human_feedback",
+            value=1.0 if thumbs_up else 0.0,
+            comment=comment or "",
+        )
+        langfuse.flush()
+        logger.info(f"Feedback logged to Langfuse | trace={trace_id} | thumbs_up={thumbs_up}")
+    except Exception as e:
+        logger.warning(f"Langfuse feedback logging failed: {e}")
