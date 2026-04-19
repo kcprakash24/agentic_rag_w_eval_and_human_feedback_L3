@@ -112,7 +112,7 @@ agentic_rag_l3/
 
 ## Prerequisites
 
-- [Ollama](https://ollama.com) running locally with `gemma2` pulled: `ollama pull gemma2`
+- [Ollama](https://ollama.com) running locally with `gemma4:e2b` pulled: `ollama pull gemma4:e2b`
 - Docker (for Postgres + Redis)
 - Python 3.11+
 - [uv](https://github.com/astral-sh/uv)
